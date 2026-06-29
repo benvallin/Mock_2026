@@ -10,7 +10,7 @@
 
 - Raw sequencing data (fastq files): available from the Sequence Read Archive under the BioProject accession number XXX. 
 - Processed data (Salmon’s quant.sf files): accessible from the Gene Expression Omnibus through GEO Series accession number XXX. 
-- Scripts / metadata: included in this GitHub repository ('benvallin/Mock_2026'), within folders 'scripts' and 'metadata', respectively.
+- Scripts / metadata / helper functions: included in this GitHub repository ('benvallin/Mock_2026'), within folders 'scripts', 'metadata' and 'python_helper_functions', respectively.
 
 
 ---
@@ -30,6 +30,16 @@
 10. dge_gsea/dge_mast.R
 11. dge_gsea/gsea_dge_mast.R
 12. summarise_gsea_dge_mast_results.R
+
+
+---
+
+
+## Requirements
+
+- R package 'rnaseqtools' available from GitHub with 'devtools::install_github("benvallin/rnaseqtools")'
+- R package 'paramstream' available from GitHub with 'devtools::install_github("benvallin/paramstream")'
+- Python package 'paramstream' available from PyPI with 'pip install py-paramstream'
 
 
 ---
