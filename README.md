@@ -37,9 +37,23 @@
 
 ## Requirements
 
-- R package 'rnaseqtools' available from GitHub with 'devtools::install_github("benvallin/rnaseqtools")'
-- R package 'paramstream' available from GitHub with 'devtools::install_github("benvallin/paramstream")'
-- Python package 'paramstream' available from PyPI with 'pip install py-paramstream'
+- R package `rnaseqtools` available from [GitHub](https://github.com/benvallin/rnaseqtools) with:
+
+```r
+remotes::install_github("benvallin/rnaseqtools")
+```
+
+- R package `paramstream` available from [GitHub](https://github.com/benvallin/paramstream) with:
+
+```r
+remotes::install_github("benvallin/paramstream")
+```
+
+- Python package `paramstream` available from [PyPI](https://pypi.org/project/py-paramstream/) with:
+
+```bash
+pip install py-paramstream
+```
 
 
 ---
