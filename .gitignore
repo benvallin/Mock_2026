@@ -1,0 +1,6 @@
+# Data to omit
+data/input/
+data/output/
+
+# Scripts to omit
+scripts/make_cell_metadata/
