@@ -1,6 +1,11 @@
 # Data to omit
 data/input/
 data/output/
+software_details/r_version.csv
+software_details/py_version.csv
+software_details/r_package_version.csv
+software_details/py_package_version.csv
 
 # Scripts to omit
 scripts/make_cell_metadata/
+utils/

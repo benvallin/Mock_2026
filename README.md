@@ -10,7 +10,9 @@
 
 - Raw sequencing data (fastq files): available from the Sequence Read Archive under the BioProject accession number XXX. 
 - Processed data (Salmon’s quant.sf files): accessible from the Gene Expression Omnibus through GEO Series accession number XXX. 
-- Scripts / metadata / helper functions: included in this GitHub repository ('benvallin/Mock_2026'), within folders 'scripts', 'metadata' and 'python_helper_functions', respectively.
+- Metadata: included in this GitHub repository ('benvallin/Mock_2026'), within folder 'metadata'.
+- Scripts / helper functions: included in this GitHub repository ('benvallin/Mock_2026'), within folders 'scripts' and 'python_helper_functions', respectively.
+- Software details: included in this GitHub repository ('benvallin/Mock_2026'), within folder 'software_details'.
 
 
 ---
