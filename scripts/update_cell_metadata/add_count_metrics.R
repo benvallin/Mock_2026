@@ -23,6 +23,7 @@
 # - cell_metadata.csv file produced by make_cell_metadata.R
 # - gene_metadata.csv file produced by make_feature_metadata.R
 # - Gene-level estimated counts produced by summarise_to_gene_level.R
+# - Salmon's quant.sf files 
 # - rnaseqtools package available from GitHub with 'devtools::install_github("benvallin/rnaseqtools")'
 
 # => Provided the above requirement(s) are met, one only needs to adjust the paths in the section below to run this script <=
@@ -48,6 +49,9 @@ gene_metadata_path <- "publications/Mock_2026/data/output/make_feature_metadata/
 
 # Path to directory containing counts files
 cnt_dir_path <- "publications/Mock_2026/data/output/count_processing/summarise_to_gene_level"
+
+# Path to directory containing Salmon quant files
+salmon_quant_dir_path <- "seq_data/ben/pff_single_cell/gencode_v46/04_salmon_quant"
 
 # Set up ------------------------------------------------------------------
 
@@ -81,8 +85,8 @@ tpm <- fread(file.path(cnt_dir_path, "tpm_lengthScaledTPM.csv"))
 # Update cell metadata with Salmon metrics --------------------------------
 
 cell_metadata <- cell_metadata %>%
-  mutate(salmon_data = map(.x = salmon_barcode_spe_dir_path,
-                           .f = ~ import_salmon_meta_info(file = file.path(.x, "aux_info/meta_info.json")) %>%
+  mutate(salmon_data = map(.x = barcode_spe_dir,
+                           .f = ~ import_salmon_meta_info(file = file.path(normalizePath(salmon_quant_dir_path), .x, "aux_info/meta_info.json")) %>%
                              select(num_processed, num_mapped, percent_mapped, frag_length_mean))) %>%
   unnest(salmon_data)
 
@@ -110,7 +114,7 @@ cell_metadata <- cell_metadata %>%
 
 # Tidy updated cell metadata
 cell_metadata <- cell_metadata %>%
-  select(DIV:n_cells, num_processed:pct_rb_genes, barcode_spe_dir, salmon_barcode_spe_dir_path)
+  select(DIV:n_cells, num_processed:pct_rb_genes, barcode_spe_dir)
 
 # Save updated cell metadata ----------------------------------------------
 

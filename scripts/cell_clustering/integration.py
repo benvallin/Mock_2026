@@ -117,7 +117,7 @@ output_param_log_id = ps.get_param_log_id(
     param_dict=output_params, in_dir_path=out_dir_path
 )
 
-# %% Load and filter adata ----
+# %% Load adata ----
 
 # Load filtered adata
 adata = sc.read_h5ad(filename=Path(adata_dir_path, f"adata_{input_param_log_id}.h5ad"))
@@ -130,13 +130,6 @@ for i in [
 ]:
 
     adata.uns[f"{i}_colors"] = ["#5d76cb", "#ca3767", "#29a655"]
-
-for i in [
-    "cell_type_bbknn",
-    "cell_type_harmony",
-]:
-
-    adata.uns[f"{i}_colors"] = ["#5d76cb", "#ca3767"]
 
 # %% Compute PCA on HVGs ----
 
@@ -300,14 +293,14 @@ for i in np.round(np.arange(0.1, 1.1, 0.1), 1):
 cell_type = "cell_type_unint"
 reso = 0.1
 adata.obs[cell_type] = np.where(
-    adata.obs[f"{leiden_key}{reso}"].isin(["0", "2"]), "neuron", "other"
+    adata.obs[f"{leiden_key}{reso}"].isin(["0", "2"]), "neuron", "fibroblast-like"
 )
 adata.obs[cell_type] = np.where(
     adata.obs[f"{leiden_key}{reso}"].isin(["1"]), "astrocyte", adata.obs[cell_type]
 )
 adata.obs[cell_type] = adata.obs[cell_type].astype("category")
 adata.obs[cell_type] = adata.obs[cell_type].cat.reorder_categories(
-    ["neuron", "astrocyte", "other"]
+    ["neuron", "astrocyte", "fibroblast-like"]
 )
 
 sc.pl.embedding(
@@ -327,349 +320,6 @@ sc.pl.embedding(
     title=[
         f"leiden unint. {reso}",
         "cell type unint.",
-        "SNAP25",
-        "top 25% SNAP25-expressing",
-        "TH",
-        "top 25% TH-expressing",
-        "AQP4",
-        "top 25% AQP4-expressing",
-    ],
-    layer="tpm",
-    sort_order=True,
-    frameon=False,
-    edges=False,
-    cmap="Reds",
-    ncols=4,
-    gene_symbols="gene_symbol",
-    vmin=0,
-    vmax="p99",
-    legend_fontsize="medium",
-)
-
-# %% Cluster BBKNN-integrated data ----
-
-# Perform BBKNN integration
-temp = sc.external.pp.bbknn(
-    adata, batch_key=current_params["cat_cov_key"], use_rep="X_pca", copy=True
-)
-
-# Transfer integration results to adata
-adata.uns["neig_bbknn"] = temp.uns["neighbors"].copy()
-
-for i in ["distances_key", "connectivities_key"]:
-    adata.uns["neig_bbknn"][i] = f"neig_bbknn_{adata.uns['neig_bbknn'][i]}"
-
-adata.obsp["neig_bbknn_distances"] = temp.obsp["distances"].copy()
-
-adata.obsp["neig_bbknn_connectivities"] = temp.obsp["connectivities"].copy()
-
-del temp
-
-# Compute UMAP
-sc.tl.umap(
-    adata=adata,
-    neighbors_key="neig_bbknn",
-    key_added="umap_bbknn",
-    random_state=random_state,
-)
-
-sc.pl.embedding(
-    adata=adata,
-    basis="umap_bbknn",
-    neighbors_key="neig_bbknn",
-    color=[
-        "line_name",
-        "donor_sex",
-        "icell8_chip_id",
-        "libsize",
-        "pct_mt_genes",
-        "pct_rb_genes",
-    ],
-    title=[
-        "line ID",
-        "donor sex",
-        "iCELL8 chip ID",
-        "total counts",
-        "% mitochondrial counts",
-        "% ribosomal counts",
-    ],
-    sort_order=True,
-    frameon=False,
-    edges=False,
-    cmap="Reds",
-    ncols=3,
-    legend_fontsize="medium",
-)
-
-sc.pl.embedding(
-    adata=adata,
-    basis="umap_bbknn",
-    neighbors_key="neig_bbknn",
-    color=[
-        "line_name",
-        "genotype",
-        "donor_sex",
-        "icell8_chip_id",
-    ],
-    title=[
-        "line ID",
-        "genotype",
-        "donor sex",
-        "iCELL8 chip ID",
-    ],
-    sort_order=True,
-    frameon=False,
-    edges=False,
-    cmap="Reds",
-    ncols=4,
-    legend_fontsize="medium",
-)
-
-# Find clusters
-leiden_key = "leid_bbknn_"
-for i in np.round(np.arange(0.1, 2.1, 0.1), 1):
-    sc.tl.leiden(
-        adata=adata,
-        neighbors_key="neig_bbknn",
-        resolution=i,
-        key_added=f"{leiden_key}{str(i)}",
-        random_state=random_state,
-    )
-
-# sc.pl.embedding(
-#     adata=adata,
-#     basis="umap_bbknn",
-#     neighbors_key="neig_bbknn",
-#     color=[
-#         "line_name",
-#         f"{leiden_key}0.1",
-#         "SNAP25",
-#         "top25pct_SNAP25_expressing",
-#         "TH",
-#         "top25pct_TH_expressing",
-#         "AQP4",
-#         "top25pct_AQP4_expressing",
-#     ],
-#     title=[
-#         "line ID",
-#         "leiden BBKNN 0.1",
-#         "SNAP25",
-#         "top 25% SNAP25-expressing",
-#         "TH",
-#         "top 25% TH-expressing",
-#         "AQP4",
-#         "top 25% AQP4-expressing",
-#     ],
-#     layer="tpm",
-#     sort_order=True,
-#     frameon=False,
-#     edges=False,
-#     cmap="Reds",
-#     ncols=4,
-#     gene_symbols="gene_symbol",
-#     vmin=0,
-#     vmax="p99",
-#     legend_fontsize="medium",
-# )
-
-# Define cell types
-cell_type = "cell_type_bbknn"
-reso = 0.1
-adata.obs[cell_type] = np.where(
-    adata.obs[f"{leiden_key}{reso}"].isin(["0", "2"]), "neuron", "astrocyte / other"
-)
-adata.obs[cell_type] = adata.obs[cell_type].astype("category")
-adata.obs[cell_type] = adata.obs[cell_type].cat.reorder_categories(
-    ["neuron", "astrocyte / other"]
-)
-
-sc.pl.embedding(
-    adata=adata,
-    basis="umap_bbknn",
-    neighbors_key="neig_bbknn",
-    color=[
-        f"{leiden_key}{reso}",
-        cell_type,
-        "SNAP25",
-        "top25pct_SNAP25_expressing",
-        "TH",
-        "top25pct_TH_expressing",
-        "AQP4",
-        "top25pct_AQP4_expressing",
-    ],
-    title=[
-        f"leiden BBKNN {reso}",
-        "cell type BBKNN",
-        "SNAP25",
-        "top 25% SNAP25-expressing",
-        "TH",
-        "top 25% TH-expressing",
-        "AQP4",
-        "top 25% AQP4-expressing",
-    ],
-    layer="tpm",
-    sort_order=True,
-    frameon=False,
-    edges=False,
-    cmap="Reds",
-    ncols=4,
-    gene_symbols="gene_symbol",
-    vmin=0,
-    vmax="p99",
-    legend_fontsize="medium",
-)
-
-# %% Cluster Harmony-integrated data ----
-
-# Perform Harmony integration
-sc.external.pp.harmony_integrate(
-    adata,
-    key=current_params["cat_cov_key"],
-    basis="X_pca",
-    adjusted_basis="X_pca_harmony",
-    random_state=random_state,
-)
-
-# Compute neighbors using the Harmony-corrected embedding
-sc.pp.neighbors(adata=adata, use_rep="X_pca_harmony", key_added="neig_harmony")
-
-# Compute UMAP
-sc.tl.umap(
-    adata=adata,
-    neighbors_key="neig_harmony",
-    key_added="umap_harmony",
-    random_state=random_state,
-)
-
-sc.pl.embedding(
-    adata=adata,
-    basis="umap_harmony",
-    neighbors_key="neig_harmony",
-    color=[
-        "line_name",
-        "donor_sex",
-        "icell8_chip_id",
-        "libsize",
-        "pct_mt_genes",
-        "pct_rb_genes",
-    ],
-    title=[
-        "line ID",
-        "donor sex",
-        "iCELL8 chip ID",
-        "total counts",
-        "% mitochondrial counts",
-        "% ribosomal counts",
-    ],
-    sort_order=True,
-    frameon=False,
-    edges=False,
-    cmap="Reds",
-    ncols=3,
-    legend_fontsize="medium",
-)
-
-sc.pl.embedding(
-    adata=adata,
-    basis="umap_harmony",
-    neighbors_key="neig_harmony",
-    color=[
-        "line_name",
-        "genotype",
-        "donor_sex",
-        "icell8_chip_id",
-    ],
-    title=[
-        "line ID",
-        "genotype",
-        "donor sex",
-        "iCELL8 chip ID",
-    ],
-    sort_order=True,
-    frameon=False,
-    edges=False,
-    cmap="Reds",
-    ncols=4,
-    legend_fontsize="medium",
-)
-
-# Find clusters
-leiden_key = "leid_harmony_"
-for i in np.round(np.arange(0.1, 1.1, 0.1), 1):
-    sc.tl.leiden(
-        adata=adata,
-        neighbors_key="neig_harmony",
-        resolution=i,
-        key_added=f"{leiden_key}{str(i)}",
-        random_state=random_state,
-    )
-
-# sc.pl.embedding(
-#     adata=adata,
-#     basis="umap_harmony",
-#     neighbors_key="neig_harmony",
-#     color=[
-#         "line_name",
-#         f"{leiden_key}0.1",
-#         "SNAP25",
-#         "top25pct_SNAP25_expressing",
-#         "TH",
-#         "top25pct_TH_expressing",
-#         "AQP4",
-#         "top25pct_AQP4_expressing",
-#     ],
-#     title=[
-#         "line ID",
-#         "leiden Harmony 0.1",
-#         "SNAP25",
-#         "top 25% SNAP25-expressing",
-#         "TH",
-#         "top 25% TH-expressing",
-#         "AQP4",
-#         "top 25% AQP4-expressing",
-#     ],
-#     layer="tpm",
-#     sort_order=True,
-#     frameon=False,
-#     edges=False,
-#     cmap="Reds",
-#     ncols=4,
-#     gene_symbols="gene_symbol",
-#     vmin=0,
-#     vmax="p99",
-#     legend_fontsize="medium",
-# )
-
-# Define cell types
-cell_type = "cell_type_harmony"
-reso = 0.1
-adata.obs[cell_type] = np.where(
-    adata.obs[f"{leiden_key}{reso}"].isin(["0", "2", "3"]),
-    "neuron",
-    "astrocyte / other",
-)
-adata.obs[cell_type] = adata.obs[cell_type].astype("category")
-adata.obs[cell_type] = adata.obs[cell_type].cat.reorder_categories(
-    ["neuron", "astrocyte / other"]
-)
-
-sc.pl.embedding(
-    adata=adata,
-    basis="umap_harmony",
-    neighbors_key="neig_harmony",
-    color=[
-        f"{leiden_key}{reso}",
-        cell_type,
-        "SNAP25",
-        "top25pct_SNAP25_expressing",
-        "TH",
-        "top25pct_TH_expressing",
-        "AQP4",
-        "top25pct_AQP4_expressing",
-    ],
-    title=[
-        f"leiden Harmony {reso}",
-        "cell type Harmony",
         "SNAP25",
         "top 25% SNAP25-expressing",
         "TH",
@@ -840,11 +490,13 @@ adata.obs[cell_type] = np.where(
     "neuron",
 )
 adata.obs[cell_type] = np.where(
-    adata.obs[f"{leiden_key}{reso}"].isin(["6"]), "other", adata.obs[cell_type]
+    adata.obs[f"{leiden_key}{reso}"].isin(["6"]),
+    "fibroblast-like",
+    adata.obs[cell_type],
 )
 adata.obs[cell_type] = adata.obs[cell_type].astype("category")
 adata.obs[cell_type] = adata.obs[cell_type].cat.reorder_categories(
-    ["neuron", "astrocyte", "other"]
+    ["neuron", "astrocyte", "fibroblast-like"]
 )
 
 sc.pl.embedding(
@@ -922,48 +574,6 @@ ax.set_title(
 )
 plt.savefig(
     Path(out_dir_path, "line_name_unintegrated.png"), bbox_inches="tight", pad_inches=0
-)
-
-# BBKNN integration
-ax = sc.pl.embedding(
-    adata=adata,
-    basis="umap_bbknn",
-    neighbors_key="neig_bbknn",
-    color=["line_name_generic"],
-    frameon=False,
-    legend_fontsize=14,
-    legend_fontoutline=2,
-    show=False,
-)
-
-ax.set_title(
-    label="BBKNN integration",
-    fontdict={"fontsize": 14, "fontweight": "bold"},
-    loc="center",
-)
-plt.savefig(
-    Path(out_dir_path, "line_name_bbknn.png"), bbox_inches="tight", pad_inches=0
-)
-
-# Harmony integration
-ax = sc.pl.embedding(
-    adata=adata,
-    basis="umap_harmony",
-    neighbors_key="neig_harmony",
-    color=["line_name_generic"],
-    frameon=False,
-    legend_fontsize=14,
-    legend_fontoutline=2,
-    show=False,
-)
-
-ax.set_title(
-    label="Harmony integration",
-    fontdict={"fontsize": 14, "fontweight": "bold"},
-    loc="center",
-)
-plt.savefig(
-    Path(out_dir_path, "line_name_harmony.png"), bbox_inches="tight", pad_inches=0
 )
 
 # scVI integration

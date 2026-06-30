@@ -59,6 +59,9 @@ setwd(work_dir_path)
 # Create output directory if necessary
 dir.create(out_dir_path, recursive = TRUE, showWarnings = FALSE)
 
+# Set seed for reproducibility
+set.seed(27)
+
 # Define input analysis parameters ----------------------------------------
 
 input_params = list(min_libsize_incl = 20000,
@@ -76,8 +79,8 @@ dge_params = list(
   coef_var = "genotype",
   coef_ref_lvl = "CTRL",
   coef_test_lvl = "TRIP",
-  # model_formula = "~ n_gene_on + genotype + (1 | line_name)",
-  model_formula = "~ n_gene_on + donor_sex + genotype + (1 | line_name)",
+  model_formula = "~ n_gene_on + genotype + (1 | line_name)",
+  # model_formula = "~ n_gene_on + donor_sex + genotype + (1 | line_name)",
   padj_dge = 0.05,
   sc_lvl_gene_filter = TRUE,
   min_cnt_excl = 0,
@@ -97,7 +100,6 @@ gsea_params <- list(
                         "MSigDB_C2_CP:KEGG_LEGACY",
                         "MSigDB_C2_CP:WIKIPATHWAYS",
                         "MSigDB_C2_CP:REACTOME",
-                        "MSigDB_C2_CP:BIOCARTA",
                         "MSigDB_C5_GO:BP")
 )
 
@@ -155,11 +157,11 @@ fgsea_sign_down <- fgsea %>%
 # fgsea::fora()
 fora_up <- multi_fora(input = gene_metadata,
                       collections = gsea_params$collections_names,
-                      genes = lfc %>% 
-                        filter(log2FoldChange > 0, padj < dge_params$padj_dge) %>% 
+                      genes = lfc %>%
+                        filter(log2FoldChange > 0, padj < dge_params$padj_dge) %>%
                         pull(ensembl_gene_id_version),
-                      universe = lfc %>% 
-                        filter(!is.na(log2FoldChange)) %>% 
+                      universe = lfc %>%
+                        filter(!is.na(log2FoldChange)) %>%
                         pull(ensembl_gene_id_version),
                       gene_id = "ensembl_gene_id_version",
                       min_set_size = gsea_params$min_size,
@@ -173,11 +175,11 @@ fora_sign_up <- fora_up %>%
 
 fora_down <- multi_fora(input = gene_metadata,
                         collections = gsea_params$collections_names,
-                        genes = lfc %>% 
-                          filter(log2FoldChange < 0, padj < dge_params$padj_dge) %>% 
+                        genes = lfc %>%
+                          filter(log2FoldChange < 0, padj < dge_params$padj_dge) %>%
                           pull(ensembl_gene_id_version),
-                        universe = lfc %>% 
-                          filter(!is.na(log2FoldChange)) %>% 
+                        universe = lfc %>%
+                          filter(!is.na(log2FoldChange)) %>%
                           pull(ensembl_gene_id_version),
                         gene_id = "ensembl_gene_id_version",
                         min_set_size = gsea_params$min_size,
@@ -191,12 +193,10 @@ fora_sign_down <- fora_down %>%
 
 # Write results to file ---------------------------------------------------
 
-walk(.x = c("fgsea", "fgsea_sign_up", "fgsea_sign_down", 
+walk(.x = c("fgsea", "fgsea_sign_up", "fgsea_sign_down",
             "fora_up", "fora_down", "fora_sign_up", "fora_sign_down"),
      .f = ~ write_rds(x = eval(as.symbol(.x)),
                       file = file.path(out_dir_path, paste0(.x, "_", output_param_log_id, ".rds"))))
-
-
 
 # -------------------------------------------------------------------------
 
@@ -205,5 +205,6 @@ walk(.x = c("fgsea", "fgsea_sign_up", "fgsea_sign_down",
 "HALLMARK_FATTY_ACID_METABOLISM" %in% fgsea_sign_down$set_name
 "REACTOME_AUTOPHAGY" %in% fgsea_sign_down$set_name
 "KEGG_PROTEASOME" %in% fgsea_sign_down$set_name
+"WP_PROTEASOME_DEGRADATION" %in% fgsea_sign_down$set_name
+"REACTOME_PROTEASOME_ASSEMBLY" %in% fgsea_sign_down$set_name
 "GOBP_LIPID_CATABOLIC_PROCESS" %in% fgsea_sign_down$set_name
-

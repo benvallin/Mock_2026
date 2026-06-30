@@ -107,7 +107,7 @@ cell_metadata <- cell_metadata %>%
 # cell_type
 cell_metadata <- set_level_color(input = cell_metadata,
                                  variable = "cell_type",
-                                 levels = c("neuron", "astrocyte", "other", NA_character_),
+                                 levels = c("neuron", "astrocyte", "fibroblast-like", NA_character_),
                                  colors = c("#5d76cb", "#ca3767", "#29a655", "#b7b7b7"))
 
 # Write updated cell metadata to disk

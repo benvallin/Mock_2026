@@ -99,7 +99,6 @@ gsea_params <- list(
                         "MSigDB_C2_CP:KEGG_LEGACY",
                         "MSigDB_C2_CP:WIKIPATHWAYS",
                         "MSigDB_C2_CP:REACTOME",
-                        "MSigDB_C2_CP:BIOCARTA",
                         "MSigDB_C5_GO:BP")
 )
 
@@ -253,7 +252,7 @@ plot_lfc(input = lfc,
          test_cond = "TRIP",
          title = "Top 50 upregulated genes",
          desc_lfc = TRUE,
-         xintercepts = seq(0.5, 3, 0.5),
+         xintercepts = seq(0.5, 3.5, 0.5),
          lab_nudge = 0.1)
 
 ggsave(filename = file.path(out_dir_path, "top50_deg_up.pdf"),
@@ -902,8 +901,10 @@ ggsave(filename = file.path(out_dir_path, paste0("pctexp_", gene_set_name, ".pdf
 
 key_gene_sets <- fgsea_sign_down %>% 
   filter(set_name %in% c(
-    "WP_PROTEASOME_DEGRADATION",
     "KEGG_PROTEASOME",
+    "WP_PROTEASOME_DEGRADATION",
+    "REACTOME_PROTEASOME_ASSEMBLY",
+    "REACTOME_AUTOPHAGY",
     "HALLMARK_OXIDATIVE_PHOSPHORYLATION",
     "HALLMARK_FATTY_ACID_METABOLISM",
     "GOBP_LIPID_CATABOLIC_PROCESS"

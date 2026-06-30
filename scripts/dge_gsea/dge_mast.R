@@ -68,6 +68,9 @@ dir.create(out_dir_path, recursive = TRUE, showWarnings = FALSE)
 # Set n cores for parallel processing
 options(mc.cores = 48)
 
+# Set seed for reproducibility
+set.seed(27)
+
 # Define input analysis parameters ----------------------------------------
 
 input_params = list(min_libsize_incl = 20000,
@@ -96,8 +99,8 @@ dge_params = list(
   coef_var = "genotype",
   coef_ref_lvl = "CTRL",
   coef_test_lvl = "TRIP",
-  # model_formula = "~ n_gene_on + genotype + (1 | line_name)",
-  model_formula = "~ n_gene_on + donor_sex + genotype + (1 | line_name)",
+  model_formula = "~ n_gene_on + genotype + (1 | line_name)",
+  # model_formula = "~ n_gene_on + donor_sex + genotype + (1 | line_name)",
   padj_dge = 0.05,
   sc_lvl_gene_filter = TRUE,
   min_cnt_excl = 0,
