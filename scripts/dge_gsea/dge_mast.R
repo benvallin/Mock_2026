@@ -4,8 +4,7 @@
 # dge_mast.R performs differential gene expression analysis (DGEA) based on user-defined parameters.
 
 ### Execution steps
-# x make_cell_metadata/make_cell_metadata.R
-# x feature_metadata/make_feature_metadata.R
+# x make_feature_metadata/make_feature_metadata.R
 # x count_processing/summarise_to_gene_level.R
 # x update_cell_metadata/add_count_metrics.R
 # x update_cell_metadata/mark_barcode_quality.R
@@ -15,7 +14,7 @@
 # x cell_clustering/summarise_cell_counts.R
 # ===>>> dge_gsea/dge_mast.R
 # - dge_gsea/gsea_dge_mast.R
-# - summarise_gsea_dge_mast_results.R
+# - dge_gsea/summarise_gsea_dge_mast_results.R
 
 # => Any script listed before the current file must be executed beforehand
 
@@ -39,16 +38,16 @@
 work_dir_path <- "/scratch/ben/rnaseq"
 
 # Path to output directory
-out_dir_path <- "publications/Mock_2026/data/output/dge_gsea/dge_mast"
+out_dir_path <- "publications/Mock_2026/data/dge_gsea/dge_mast"
 
 # Path to directory containing cell metadata file
-cell_metadata_dir_path <- "publications/Mock_2026/data/output/update_cell_metadata/add_cell_type_annotation"
+cell_metadata_dir_path <- "publications/Mock_2026/data/update_cell_metadata/add_cell_type_annotation"
 
 # Path to gene metadata file (csv)
-gene_metadata_path <- "publications/Mock_2026/data/output/make_feature_metadata/v44/gene_metadata.csv"
+gene_metadata_path <- "publications/Mock_2026/data/make_feature_metadata/v44/gene_metadata.csv"
 
 # Path to directory containing counts files
-cnt_dir_path <- "publications/Mock_2026/data/output/count_processing/summarise_to_gene_level"
+cnt_dir_path <- "publications/Mock_2026/data/count_processing/summarise_to_gene_level"
 
 # Set up ------------------------------------------------------------------
 

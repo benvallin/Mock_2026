@@ -1,7 +1,6 @@
 # Data to omit
 seq_data_Mock_2026/
-data/input/
-data/output/
+data/
 metadata/ipsc_line_details.csv
 software_details/r_version.csv
 software_details/py_version.csv
@@ -9,7 +8,6 @@ software_details/r_package_version.csv
 software_details/py_package_version.csv
 
 # Scripts to omit
-scripts/ben_scripts/
-scripts/make_cell_metadata/
+scripts/prep_scripts/
 scripts/make_ipsc_line_summary/
 utils/

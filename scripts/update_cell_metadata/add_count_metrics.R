@@ -4,8 +4,7 @@
 # add_count_metrics.R updates cell metadata with Salmon's count metrics.
 
 ### Execution steps
-# x make_cell_metadata/make_cell_metadata.R
-# x feature_metadata/make_feature_metadata.R
+# x make_feature_metadata/make_feature_metadata.R
 # x count_processing/summarise_to_gene_level.R
 # ===>>> update_cell_metadata/add_count_metrics.R
 # - update_cell_metadata/mark_barcode_quality.R
@@ -15,15 +14,15 @@
 # - cell_clustering/summarise_cell_counts.R
 # - dge_gsea/dge_mast.R
 # - dge_gsea/gsea_dge_mast.R
-# - summarise_gsea_dge_mast_results.R
+# - dge_gsea/summarise_gsea_dge_mast_results.R
 
 # => Any script listed before the current file must be executed beforehand
 
 ### Requirements
-# - cell_metadata.csv file produced by make_cell_metadata.R
+# - cell_metadata.csv available on GitHub repository 'benvallin/Mock_2026', at metadata/cell_metadata.csv
 # - gene_metadata.csv file produced by make_feature_metadata.R
 # - Gene-level estimated counts produced by summarise_to_gene_level.R
-# - Salmon's quant.sf files 
+# - Salmon's quant.sf and meta_info.json files available from the Gene Expression Omnibus (GEO) under accession number GSE354120
 # - rnaseqtools package available from GitHub with 'devtools::install_github("benvallin/rnaseqtools")'
 
 # => Provided the above requirement(s) are met, one only needs to adjust the paths in the section below to run this script <=
@@ -39,18 +38,19 @@
 work_dir_path <- "/scratch/ben/rnaseq"
 
 # Path to output directory
-out_dir_path <- "publications/Mock_2026/data/output/update_cell_metadata/add_count_metrics"
+out_dir_path <- "publications/Mock_2026/data/update_cell_metadata/add_count_metrics"
 
 # Path to cell metadata file (csv)
-cell_metadata_path <- "publications/Mock_2026/data/output/make_cell_metadata/cell_metadata.csv"
+cell_metadata_path <- "publications/Mock_2026/metadata/cell_metadata.csv"
 
 # Path to gene metadata file (csv)
-gene_metadata_path <- "publications/Mock_2026/data/output/make_feature_metadata/v44/gene_metadata.csv"
+gene_metadata_path <- "publications/Mock_2026/data/make_feature_metadata/v44/gene_metadata.csv"
 
 # Path to directory containing counts files
-cnt_dir_path <- "publications/Mock_2026/data/output/count_processing/summarise_to_gene_level"
+cnt_dir_path <- "publications/Mock_2026/data/count_processing/summarise_to_gene_level"
 
-# Path to directory containing Salmon quant files
+# Path to directory containing Salmon quant.sf and meta_info.json files
+# salmon_quant_dir_path <- "publications/Mock_2026/seq_data_Mock_2026"
 salmon_quant_dir_path <- "seq_data/ben/pff_single_cell/gencode_v46/04_salmon_quant"
 
 # Set up ------------------------------------------------------------------

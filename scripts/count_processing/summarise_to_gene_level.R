@@ -4,8 +4,7 @@
 # summarise_to_gene_level.R produces gene count estimates from Salmon's transcript abundance estimates
 
 ### Execution steps
-# x make_cell_metadata/make_cell_metadata.R
-# x feature_metadata/make_feature_metadata.R
+# x make_feature_metadata/make_feature_metadata.R
 # ===>>> count_processing/summarise_to_gene_level.R
 # - update_cell_metadata/add_count_metrics.R
 # - update_cell_metadata/mark_barcode_quality.R
@@ -15,14 +14,14 @@
 # - cell_clustering/summarise_cell_counts.R
 # - dge_gsea/dge_mast.R
 # - dge_gsea/gsea_dge_mast.R
-# - summarise_gsea_dge_mast_results.R
+# - dge_gsea/summarise_gsea_dge_mast_results.R
 
 # => Any script listed before the current file must be executed beforehand
 
 ### Requirements
-# - cell_metadata.csv file produced by make_cell_metadata.R
+# - cell_metadata.csv available on GitHub repository 'benvallin/Mock_2026', at metadata/cell_metadata.csv
 # - transcript_metadata.csv file produced by make_feature_metadata.R
-# - Salmon's quant.sf files 
+# - Salmon's quant.sf files available from the Gene Expression Omnibus (GEO) under accession number GSE354120
 
 # => Provided the above requirement(s) are met, one only needs to adjust the paths in the section below to run this script <=
 
@@ -37,16 +36,16 @@
 work_dir_path <- "/scratch/ben/rnaseq"
 
 # Path to output directory
-out_dir_path <- "publications/Mock_2026/data/output/count_processing/summarise_to_gene_level"
+out_dir_path <- "publications/Mock_2026/data/count_processing/summarise_to_gene_level"
 
 # Path to cell metadata file (csv)
-cell_metadata_path <- "publications/Mock_2026/data/output/make_cell_metadata/cell_metadata.csv"
+cell_metadata_path <- "publications/Mock_2026/metadata/cell_metadata.csv"
 
 # Path to transcript metadata file (csv)
-transcript_metadata_path <- "publications/Mock_2026/data/output/make_feature_metadata/v44/transcript_metadata.csv"
+transcript_metadata_path <- "publications/Mock_2026/data/make_feature_metadata/v44/transcript_metadata.csv"
 
-# Path to directory containing Salmon quant files
-salmon_quant_dir_path <- "seq_data/ben/pff_single_cell/gencode_v46/04_salmon_quant"
+# Path to directory containing Salmon quant.sf and meta_info.json files
+salmon_quant_dir_path <- "publications/Mock_2026/seq_data_Mock_2026"
 
 # Set up ------------------------------------------------------------------
 
@@ -64,10 +63,7 @@ dir.create(out_dir_path, recursive = TRUE, showWarnings = FALSE)
 # Import metadata --------------------------------------------------
 
 # Import cell metadata
-cell_metadata <- read_csv(cell_metadata_path) %>%
-  mutate(files = setNames(object = file.path(normalizePath(salmon_quant_dir_path), barcode_spe_dir, "quant.sf"),
-                          nm = barcode)) %>%
-  select(files, everything())
+cell_metadata <- read_csv(cell_metadata_path) 
 
 # Import transcript metadata
 transcript_metadata <- read_csv(transcript_metadata_path)
@@ -81,6 +77,11 @@ transcript_metadata <- read_csv(transcript_metadata_path)
 # - Using countsFromAbundance = "lengthScaledTPM"
 # => Generate estimated counts using abundance estimates scaled using the average transcript length over samples and then the library size
 
+salmon_quant_files <- setNames(object = map_chr(.x = cell_metadata$barcode_spe_dir,
+                                                .f = ~ file.path(normalizePath(salmon_quant_dir_path), 
+                                                                 paste0(.x, "_quant.sf"))),
+                               nm = cell_metadata$barcode)
+
 for(i in c("no", "scaledTPM", "lengthScaledTPM")) {
   
   message("Processing countsFromAbundance: ", i, "\n")
@@ -88,7 +89,7 @@ for(i in c("no", "scaledTPM", "lengthScaledTPM")) {
   txi_nm <- paste0("txi", ifelse(i == "no", "", paste0("_", i)))
   
   assign(x = txi_nm,
-         value = tximport(files = cell_metadata$files,
+         value = tximport(files = salmon_quant_files,
                           type = "salmon",
                           txOut = FALSE,
                           countsFromAbundance = i,

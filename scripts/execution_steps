@@ -1,6 +1,4 @@
-- make_cell_metadata/make_cell_metadata.R (output provided in 'metadata/cell_metadata.csv')
-
-- feature_metadata/make_feature_metadata.R
+- make_feature_metadata/make_feature_metadata.R
 
 - count_processing/summarise_to_gene_level.R
 

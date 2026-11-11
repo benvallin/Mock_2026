@@ -4,8 +4,7 @@
 # integration.py performs data integration, cell clustering and cell type annotation.
 
 ### Execution steps
-# x make_cell_metadata/make_cell_metadata.R
-# x feature_metadata/make_feature_metadata.R
+# x make_feature_metadata/make_feature_metadata.R
 # x count_processing/summarise_to_gene_level.R
 # x update_cell_metadata/add_count_metrics.R
 # x update_cell_metadata/mark_barcode_quality.R
@@ -15,7 +14,7 @@
 # - cell_clustering/summarise_cell_counts.R
 # - dge_gsea/dge_mast.R
 # - dge_gsea/gsea_dge_mast.R
-# - summarise_gsea_dge_mast_results.R
+# - dge_gsea/summarise_gsea_dge_mast_results.R
 
 # => Any script listed before the current file must be executed beforehand
 
@@ -37,13 +36,13 @@
 work_dir_path = "/scratch/ben/rnaseq"
 
 # Path to output directory
-out_dir_path = "publications/Mock_2026/data/output/cell_clustering/integration"
+out_dir_path = "publications/Mock_2026/data/cell_clustering/integration"
 
 # Path to directory containing Ben's python functions file (py_functions.py)
 py_funs_dir_path = "tools/rnaseq_functions"
 
 # Path to directory containing adata file
-adata_dir_path = "publications/Mock_2026/data/output/cell_clustering/build_adata"
+adata_dir_path = "publications/Mock_2026/data/cell_clustering/build_adata"
 
 # %% Set up ----
 

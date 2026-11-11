@@ -4,8 +4,7 @@
 # summarise_cell_counts.R produces a summary of cell counts by cell type.
 
 ### Execution steps
-# x make_cell_metadata/make_cell_metadata.R
-# x feature_metadata/make_feature_metadata.R
+# x make_feature_metadata/make_feature_metadata.R
 # x count_processing/summarise_to_gene_level.R
 # x update_cell_metadata/add_count_metrics.R
 # x update_cell_metadata/mark_barcode_quality.R
@@ -15,7 +14,7 @@
 # ===>>> cell_clustering/summarise_cell_counts.R
 # - dge_gsea/dge_mast.R
 # - dge_gsea/gsea_dge_mast.R
-# - summarise_gsea_dge_mast_results.R
+# - dge_gsea/summarise_gsea_dge_mast_results.R
 
 # => Any script listed before the current file must be executed beforehand
 
@@ -36,10 +35,10 @@
 work_dir_path <- "/scratch/ben/rnaseq"
 
 # Path to output directory
-out_dir_path <- "publications/Mock_2026/data/output/cell_clustering/summarise_cell_counts"
+out_dir_path <- "publications/Mock_2026/data/cell_clustering/summarise_cell_counts"
 
 # Path to directory containing cell metadata file
-cell_metadata_dir_path <- "publications/Mock_2026/data/output/update_cell_metadata/add_cell_type_annotation"
+cell_metadata_dir_path <- "publications/Mock_2026/data/update_cell_metadata/add_cell_type_annotation"
 
 # Set up ------------------------------------------------------------------
 
