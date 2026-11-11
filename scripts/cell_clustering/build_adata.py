@@ -80,25 +80,31 @@ Path(out_dir_path).mkdir(parents=True, exist_ok=True)
 
 # %% Define analysis parameters ----
 
-# Define donor annotation + barcode QC parameters (input)
+# Define input analysis parameters
 input_params = {
     "min_libsize_incl": 20000,
     "min_gene_incl": 3000,
     "max_pct_mt_incl": 20,
 }
 
+# Define current analysis parameters
+current_params = {"n_cnt_threshold": 5, "pct_cell_threshold": 0.01}
+
 # %% Stream analysis parameter values ----
+
 
 input_param_log_id = ps.get_param_log_id(
     param_dict=input_params, in_dir_path=cell_metadata_dir_path
 )
 
+output_params = {**input_params, **current_params}
+
 ps.write_param_log(
-    param_dict=input_params, out_dir_path=out_dir_path, param_log_table=True
+    param_dict=output_params, out_dir_path=out_dir_path, param_log_table=True
 )
 
 output_param_log_id = ps.get_param_log_id(
-    param_dict=input_params, in_dir_path=out_dir_path
+    param_dict=output_params, in_dir_path=out_dir_path
 )
 
 # %% Build adata ----
@@ -158,8 +164,12 @@ adata.var = gene_metadata
 
 # %% Filter adata.var ----
 
-# Subset to genes with at least 5 raw counts in at least 1% of the cells
-adata = adata[:, (adata.X >= 5).sum(axis=0) > (0.01 * adata.n_obs)].copy()
+# Subset to genes with at least n_cnt_threshold raw counts in at least pct_cell_threshold of the cells
+adata = adata[
+    :,
+    (adata.X >= current_params["n_cnt_threshold"]).sum(axis=0)
+    > (current_params["pct_cell_threshold"] * adata.n_obs),
+].copy()
 
 # %% Tidy adata.obs ----
 

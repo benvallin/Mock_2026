@@ -70,6 +70,8 @@ dir.create(out_dir_path, recursive = TRUE, showWarnings = FALSE)
 input_params = list(min_libsize_incl = 20000,
                     min_gene_incl = 3000,
                     max_pct_mt_incl = 20,
+                    n_cnt_threshold = 5,
+                    pct_cell_threshold = 0.01,
                     n_top_genes = 2000,
                     cat_cov_key = "line_name_generic",
                     integration_method = "scvi")
@@ -80,7 +82,6 @@ dge_params = list(
   coef_ref_lvl = "CTRL",
   coef_test_lvl = "TRIP",
   model_formula = "~ n_gene_on + genotype + (1 | line_name)",
-  # model_formula = "~ n_gene_on + donor_sex + genotype + (1 | line_name)",
   padj_dge = 0.05,
   sc_lvl_gene_filter = TRUE,
   min_cnt_excl = 0,

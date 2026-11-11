@@ -20,7 +20,7 @@
 
 ### Requirements
 # - cell_metadata.parquet file produced by mark_barcode_quality.R
-# - cell_type_annotation.csv file produced by integration.py
+# - adata.h5ad file produced by integration.py
 # - rnaseqtools package available from GitHub with 'devtools::install_github("benvallin/rnaseqtools")'
 # - paramstream package available from GitHub with 'devtools::install_github("benvallin/paramstream")'
 
@@ -52,6 +52,8 @@ library(tidyverse)
 library(rnaseqtools)
 library(paramstream)
 library(arrow)
+library(SingleCellExperiment)
+library(zellkonverter)
 
 # Set working directory
 setwd(work_dir_path)
@@ -66,7 +68,9 @@ input1_params = list(min_libsize_incl = 20000,
                      max_pct_mt_incl = 20)
 
 input2_params <- c(input1_params,
-                   list(n_top_genes = 2000,
+                   list(n_cnt_threshold = 5,
+                        pct_cell_threshold = 0.01,
+                        n_top_genes = 2000,
                         cat_cov_key = "line_name_generic",
                         integration_method = "scvi"))
 
@@ -91,9 +95,12 @@ output_param_log_id <- get_param_log_id(param_list = input2_params,
 cell_metadata <- read_parquet(file.path(cell_metadata_dir_path, 
                                         paste0("cell_metadata_", input1_param_log_id, ".parquet")))
 
-# Load cell type annotation
-cell_type_annotation <- read_csv(file.path(clustering_dir_path, 
-                                           paste0("cell_type_annotation_", input2_param_log_id, ".csv"))) 
+# Construct SingleCellExperiment (SCE) from AnnData
+sce <- readH5AD(file.path(clustering_dir_path, paste0("adata_", input2_param_log_id, ".h5ad")), reader = "R")
+
+# Extract cell type annotation
+cell_type_annotation <- as_tibble(colData(sce)) %>% 
+  select(barcode, cell_type) 
 
 # Add cell type annotation to cell metadata -------------------------------
 

@@ -85,11 +85,13 @@ torch.backends.cudnn.benchmark = False
 
 # %% Define analysis parameters ----
 
-# Define donor annotation + barcode QC parameters (input)
+# Define input analysis parameters
 input_params = {
     "min_libsize_incl": 20000,
     "min_gene_incl": 3000,
     "max_pct_mt_incl": 20,
+    "n_cnt_threshold": 5,
+    "pct_cell_threshold": 0.01,
 }
 
 # Define current analysis parameters (current)
@@ -546,13 +548,6 @@ adata.obs["cell_type"] = adata.obs[f"cell_type_{integration_method}"].copy()
 
 # Write annotated adata to disk
 adata.write_h5ad(filename=Path(out_dir_path, f"adata_{output_param_log_id}.h5ad"))
-
-# Write cell type annotation to disk
-cell_type_annotation = adata.obs.loc[:, ["barcode", "cell_type"]].copy()
-
-cell_type_annotation.to_csv(
-    Path(out_dir_path, f"cell_type_annotation_{output_param_log_id}.csv"), index=False
-)
 
 # %% Pretty figures ----
 

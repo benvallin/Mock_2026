@@ -75,6 +75,8 @@ set.seed(27)
 input_params = list(min_libsize_incl = 20000,
                     min_gene_incl = 3000,
                     max_pct_mt_incl = 20,
+                    n_cnt_threshold = 5,
+                    pct_cell_threshold = 0.01,
                     n_top_genes = 2000,
                     cat_cov_key = "line_name_generic",
                     integration_method = "scvi")
